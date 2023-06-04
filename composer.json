@@ -1,7 +1,7 @@
 {
     "name": "mibo/vat",
     "type": "library",
-    "description": "PHP Library for generic and/or custom properties",
+    "description": "PHP Library for VAT abstraction",
     "keywords": [
         "PHP",
         "EU VAT",
