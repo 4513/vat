@@ -27,11 +27,34 @@ class VAT
 
     private ?string $category;
 
-    public function __construct(string $countryCode, VATRate $rate = VATRate::STANDARD, ?string $category = null)
+    /** @var array<string, array<string, self>> */
+    private static array $instances = [];
+
+    protected function __construct(string $countryCode, VATRate $rate = VATRate::STANDARD, ?string $category = null)
     {
         $this->countryCode = $countryCode;
         $this->rate        = $rate;
         $this->category    = $category;
+    }
+
+    /**
+     * @param string $countryCode
+     * @param \MiBo\VAT\Enums\VATRate $rate
+     * @param string|null $category
+     *
+     * @return self
+     */
+    public static function get(string $countryCode, VATRate $rate = VATRate::STANDARD, ?string $category = null): self
+    {
+        if ($category === null) {
+            return new self($countryCode, $rate);
+        }
+
+        if (empty(self::$instances[$countryCode][$category])) {
+            self::$instances[$countryCode][$category] = new self($countryCode, $rate, $category);
+        }
+
+        return self::$instances[$countryCode][$category];
     }
 
     /**

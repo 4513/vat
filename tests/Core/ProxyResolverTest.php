@@ -36,11 +36,11 @@ class ProxyResolverTest extends TestCase
     {
         ProxyResolver::setConvertor(TestingResolver::class);
 
-        $vat = ProxyResolver::convertForCountry(new VAT("SK", VATRate::STANDARD), "SK");
+        $vat = ProxyResolver::convertForCountry(VAT::get("SK", VATRate::STANDARD), "SK");
 
         $this->assertTrue($vat->isStandard());
 
-        $vat = ProxyResolver::convertForCountry(new VAT("SK", VATRate::STANDARD), "CZ");
+        $vat = ProxyResolver::convertForCountry(VAT::get("SK", VATRate::STANDARD), "CZ");
 
         $this->assertFalse($vat->isStandard());
     }
@@ -59,6 +59,6 @@ class ProxyResolverTest extends TestCase
         ProxyResolver::setResolver(TestingResolver::class);
 
         $this->assertTrue(ProxyResolver::retrieveByCategory("", "SK")->isNone());
-        $this->assertTrue(ProxyResolver::getPercentageOf(new VAT("SK", VATRate::STANDARD)) === 0);
+        $this->assertTrue(ProxyResolver::getPercentageOf(VAT::get("SK", VATRate::STANDARD)) === 0);
     }
 }

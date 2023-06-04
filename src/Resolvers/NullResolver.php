@@ -36,7 +36,7 @@ final class NullResolver implements Resolver, Convertor
      */
     public static function retrieveByCategory(string $category, string $countryCode): VAT
     {
-        return new VAT($countryCode, VATRate::NONE, $category);
+        return VAT::get($countryCode, VATRate::NONE, $category);
     }
 
     /**

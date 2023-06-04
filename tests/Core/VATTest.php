@@ -30,12 +30,13 @@ class VATTest extends TestCase
      * @covers ::__construct
      * @covers ::__call
      * @covers ::getRate
+     * @covers ::get
      *
      * @return void
      */
     public function testProxy(): void
     {
-        $vat = new VAT("SK", VATRate::SUPER_REDUCED);
+        $vat = VAT::get("SK", VATRate::SUPER_REDUCED);
 
         $this->assertTrue($vat->isSuperReduced());
         $this->assertTrue($vat->getRate()->isSuperReduced());
@@ -46,12 +47,13 @@ class VATTest extends TestCase
      *
      * @covers ::__construct
      * @covers ::getCategory
+     * @covers ::get
      *
      * @return void
      */
     public function testCategory(): void
     {
-        $vat = new VAT("SK", VATRate::STANDARD, "food");
+        $vat = VAT::get("SK", VATRate::STANDARD, "food");
 
         $this->assertEquals("food", $vat->getCategory());
     }
@@ -61,12 +63,13 @@ class VATTest extends TestCase
      *
      * @covers ::__construct
      * @covers ::getCountryCode
+     * @covers ::get
      *
      * @return void
      */
     public function testCountry(): void
     {
-        $vat = new VAT("SK", VATRate::STANDARD, "food");
+        $vat = VAT::get("SK", VATRate::STANDARD, "food");
 
         $this->assertEquals("SK", $vat->getCountryCode());
     }
@@ -80,9 +83,9 @@ class VATTest extends TestCase
      */
     public function testIs(): void
     {
-        $vat = new VAT("SK", VATRate::STANDARD, "food");
+        $vat = VAT::get("SK", VATRate::STANDARD, "food");
 
-        $this->assertTrue($vat->is(new VAT("SK", VATRate::STANDARD, "food")));
-        $this->assertTrue($vat->is(new VAT("SK", VATRate::STANDARD)));
+        $this->assertTrue($vat->is(VAT::get("SK", VATRate::STANDARD, "food")));
+        $this->assertTrue($vat->is(VAT::get("SK", VATRate::STANDARD)));
     }
 }

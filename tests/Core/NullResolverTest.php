@@ -32,7 +32,7 @@ class NullResolverTest extends TestCase
      */
     public function testConvertForCountry(): void
     {
-        $vat = NullResolver::convertForCountry(new VAT("SK"), "SK");
+        $vat = NullResolver::convertForCountry(VAT::get("SK"), "SK");
         $this->assertTrue($vat->isNone());
     }
 
@@ -58,6 +58,6 @@ class NullResolverTest extends TestCase
      */
     public function testGetPercentageOf(): void
     {
-        $this->assertSame(0, NullResolver::getPercentageOf(new VAT("SK")));
+        $this->assertSame(0, NullResolver::getPercentageOf(VAT::get("SK")));
     }
 }
