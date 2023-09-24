@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MiBo\VAT;
 
+use JetBrains\PhpStorm\Pure;
 use MiBo\VAT\Enums\VATRate;
 
 /**
@@ -60,6 +61,7 @@ class VAT
     /**
      * @return string
      */
+    #[Pure]
     public function getCountryCode(): string
     {
         return $this->countryCode;
@@ -68,6 +70,7 @@ class VAT
     /**
      * @return \MiBo\VAT\Enums\VATRate
      */
+    #[Pure]
     public function getRate(): VATRate
     {
         return $this->rate;
@@ -76,6 +79,7 @@ class VAT
     /**
      * @return string|null
      */
+    #[Pure]
     public function getCategory(): ?string
     {
         return $this->category;
@@ -88,6 +92,7 @@ class VAT
      *
      * @return bool
      */
+    #[Pure]
     public function is(VAT $vat): bool
     {
         return ($this->category !== null && $vat->getCategory() !== null && $this->category === $vat->getCategory()) ||
@@ -103,6 +108,7 @@ class VAT
      *
      * @return bool
      */
+    #[Pure]
     public function __call(string $name, array $arguments): bool
     {
         return $this->rate->$name();
