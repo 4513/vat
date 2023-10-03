@@ -280,12 +280,12 @@ enum VATRate
     /**
      * Get VAT rate by name.
      *
-     * @param \MiBo\VAT\Enums\VATRate $rate
+     * @param \MiBo\VAT\Enums\VATRate $rate VAT rate to compare.
      *
      * @return bool
      */
     #[Pure]
-    public function equals(VATRate $rate): bool
+    public function equals(self $rate): bool
     {
         return $this->name === $rate->name;
     }

@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace MiBo\VAT;
 
+use BadMethodCallException;
+use DateTimeInterface;
 use JetBrains\PhpStorm\Pure;
+use MiBo\Taxonomy\Contracts\ProductTaxonomy;
 use MiBo\VAT\Enums\VATRate;
+use Stringable;
 
 /**
  * Class VAT
@@ -20,97 +24,110 @@ use MiBo\VAT\Enums\VATRate;
  *
  * @mixin \MiBo\VAT\Enums\VATRate
  */
-class VAT
+final class VAT
 {
     private VATRate $rate;
 
+    private ProductTaxonomy $classification;
+
+    private DateTimeInterface $date;
+
     private string $countryCode;
 
-    private ?string $category;
-
-    /** @var array<string, array<string, self>> */
+    /** @var array<string, array<string, array<string, self>>> */
     private static array $instances = [];
 
-    protected function __construct(string $countryCode, VATRate $rate = VATRate::STANDARD, ?string $category = null)
+    protected function __construct(
+        Stringable|string $countryCode,
+        VATRate $rate,
+        ProductTaxonomy $classification,
+        DateTimeInterface $date
+    )
     {
-        $this->countryCode = $countryCode;
-        $this->rate        = $rate;
-        $this->category    = $category;
+        $this->rate           = $rate;
+        $this->classification = $classification;
+        $this->date           = $date;
+        $this->countryCode    = (string) $countryCode;
     }
 
     /**
-     * @param string $countryCode
-     * @param \MiBo\VAT\Enums\VATRate $rate
-     * @param string|null $category
+     * @internal Use Resolver instead.
+     *
      *
      * @return self
      */
-    public static function get(string $countryCode, VATRate $rate = VATRate::STANDARD, ?string $category = null): self
+    public static function get(
+        Stringable|string $countryCode,
+        VATRate $rate,
+        ProductTaxonomy $classification,
+        DateTimeInterface $date
+    ): self
     {
-        if ($category === null) {
-            return new self($countryCode, $rate);
+        if (!isset(self::$instances[(string) $countryCode][$classification->getCode()][$date->format('Y-m-d')])) {
+            self::$instances[(string) $countryCode][$classification->getCode()][$date->format('Y-m-d')] = new self(
+                $countryCode, $rate, $classification, $date
+            );
         }
 
-        if (empty(self::$instances[$countryCode][$category])) {
-            self::$instances[$countryCode][$category] = new self($countryCode, $rate, $category);
-        }
-
-        return self::$instances[$countryCode][$category];
+        return self::$instances[(string) $countryCode][$classification->getCode()][$date->format('Y-m-d')];
     }
 
-    /**
-     * @return string
-     */
     #[Pure]
     public function getCountryCode(): string
     {
         return $this->countryCode;
     }
 
-    /**
-     * @return \MiBo\VAT\Enums\VATRate
-     */
     #[Pure]
     public function getRate(): VATRate
     {
         return $this->rate;
     }
 
-    /**
-     * @return string|null
-     */
     #[Pure]
-    public function getCategory(): ?string
+    public function getClassification(): ProductTaxonomy
     {
-        return $this->category;
+        return $this->classification;
+    }
+
+    #[Pure]
+    public function getDate(): DateTimeInterface
+    {
+        return $this->date;
     }
 
     /**
      * Checks if the VAT is the same as the given one.
      *
-     * @param \MiBo\VAT\VAT $vat
      *
      * @return bool
      */
     #[Pure]
-    public function is(VAT $vat): bool
+    public function is(self $vat, bool $strict = false): bool
     {
-        return ($this->category !== null && $vat->getCategory() !== null && $this->category === $vat->getCategory()) ||
-            (
-                $this->countryCode === $vat->getCountryCode() &&
-                $this->rate->equals($vat->getRate())
-            );
+        return $strict
+            ? $this->classification === $vat->getClassification()
+            && $this->rate->name === $vat->getRate()->name
+            && $this->countryCode === $vat->getCountryCode()
+            : $this->classification === $vat->getClassification();
     }
 
     /**
-     * @param string $name
-     * @param array<int, mixed> $arguments
+     * @param non-empty-string $name
+     * @param array<int, null> $arguments
      *
      * @return bool
+     *
+     * @phpcs:disable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
      */
     #[Pure]
     public function __call(string $name, array $arguments): bool
     {
-        return $this->rate->$name();
+        if (method_exists($this->rate, $name)) {
+            // @phpstan-ignore-next-line
+            return $this->rate->$name();
+        }
+
+        throw new BadMethodCallException('Method ' . $name . ' does not exists on ' . self::class);
     }
 }

@@ -48,25 +48,28 @@ composer require mibo/vat
 
 ### Usage
 ```php
-$vat = \MiBo\VAT\VAT::get('SVK', \MiBo\VAT\Enums\VATRate::NONE, '2206');
+/** @var \MiBo\Taxonomy\Contracts\ProductTaxonomy $classification */
+$classification = {...};
+$vat = \MiBo\VAT\VAT::get('SVK', \MiBo\VAT\Enums\VATRate::NONE, $classification, \Carbon\Carbon::now());
 ```
 **Note that when specifying the VAT rate and the classification, that VAT rate might be later changed when the
 Resolver finds out that the classification is not valid for the specified VAT rate.** Because of that, better
 way to create a VAT object is:
+
 ```php
-\MiBo\VAT\Contracts\Resolver::retrieveByCategory('2206', 'SVK');
+\MiBo\VAT\Contracts\VATResolver::retrieveVAT($classification, 'SVK', \Carbon\Carbon::now());
 ```
 
 To change the VAT for another country:
 ```php
-$vat = \MiBo\VAT\Contracts\Convertor::convertForCountry($vat, 'CZE');
+$vat = \MiBo\VAT\Contracts\Convertor::convert($vat, 'CZE', \Carbon\Carbon::now());
 ```
 
  For now, the country code is not checked and accepts any string value. Later it might be specified whether to
 use two or three-letter country code by ISO standard.
 
 Changing or applying Resolver and Convertor:
+
 ```php
-\MiBo\VAT\Resolvers\ProxyResolver::setConvertor(\MyConvertor::class);
-\MiBo\VAT\Resolvers\ProxyResolver::setResolver(\MyResolver::class);
+$manager = new \MiBo\VAT\Manager($myConvertor, $myValueResolver, $myVATResolver);
 ```

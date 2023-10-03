@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MiBo\VAT\Contracts;
 
+use DateTimeInterface;
 use MiBo\VAT\VAT;
 
 /**
@@ -20,12 +21,17 @@ use MiBo\VAT\VAT;
 interface Convertor
 {
     /**
-     * Converts a VAT for a category from one country to another.
+     * Converts the provided VAT into VAT for the specified country and date.
      *
-     * @param \MiBo\VAT\VAT $vat The VAT to convert.
-     * @param string $countryCode The country code to convert to.
+     *  If the country code is null, the VAT country is kept and only the date is changed. If the date is
+     * null, the date is kept. If both are null, the VAT is returned as is.
      *
-     * @return \MiBo\VAT\VAT The converted VAT.
+     *
+     * @return \MiBo\VAT\VAT
+     *
+     * @throws \MiBo\VAT\Exceptions\UnknownCountryToConvertException If the country to convert is unknown
+     *     or not supported.
+     * @throws \MiBo\VAT\Exceptions\FailedToConvertVATException If the VAT cannot be converted.
      */
-    public static function convertForCountry(VAT $vat, string $countryCode): VAT;
+    public function convert(VAT $vat, ?string $countryCode = null, ?DateTimeInterface $date = null): VAT;
 }
