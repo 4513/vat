@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @coversDefaultClass \MiBo\VAT\Enums\VATRate
  */
-class RateTest extends TestCase
+final class RateTest extends TestCase
 {
     /**
      * @small
