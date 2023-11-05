@@ -106,10 +106,10 @@ final class VAT
     public function is(self $vat, bool $strict = false): bool
     {
         return $strict
-            ? $this->classification === $vat->getClassification()
-            && $this->rate->name === $vat->getRate()->name
+            ? $this->classification->is($vat->getClassification())
+            && $this->rate->equals($vat->getRate())
             && $this->countryCode === $vat->getCountryCode()
-            : $this->classification === $vat->getClassification();
+            : $this->classification->is($vat->getClassification());
     }
 
     /**
