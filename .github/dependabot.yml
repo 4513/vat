@@ -5,7 +5,6 @@ updates:
     schedule:
       interval: "weekly"
     update-types: "major"
-updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
